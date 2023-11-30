@@ -74,10 +74,11 @@ static void rtt_tuner_receive(uint8_t ** packet, uint8_t ** tuner_packet, void *
 static uint8_t tuner_down_buf[32];
 
 static rtt_tuner_data_t tuner_up_buf = {
-        .header = {RTT_TX_HEADER0, RTT_TX_HEADER1},
-        .tuner_data = {0},
-        .tail = {RTT_TX_TAIL0, RTT_TX_TAIL1, RTT_TX_TAIL2}
+    .header = {RTT_TX_HEADER0, RTT_TX_HEADER1},
+    .tuner_data = {0},
+    .tail = {RTT_TX_TAIL0, RTT_TX_TAIL1, RTT_TX_TAIL2}
 };
+
 
 /*******************************************************************************
  * Macros
@@ -98,7 +99,7 @@ static void initialize_capsense_tuner(void);
  * Summary:
  *  System entrance point. This function performs
  *  - initial setup of device
- *  - initialize CapSense
+ *  - initialize CAPSENSE
  *  - initialize tuner communication
  *  - scan touch input continuously
  *
@@ -129,10 +130,10 @@ int main(void)
     /* Enable global interrupts */
     __enable_irq();
 
-    /* Initialize CapSense */
+    /* Initialize CAPSENSE */
     initialize_capsense();
 
-    /* Initialize CapSense Tuner */
+    /* Initialize CAPSENSE Tuner */
     initialize_capsense_tuner();
 
     /* Start the first scan */
@@ -145,9 +146,10 @@ int main(void)
             /* Process all widgets */
             Cy_CapSense_ProcessAllWidgets(&cy_capsense_context);
 
-            /* Establishes synchronized communication with the CapSense Tuner tool */
+            /* Establishes synchronized communication with the CAPSENSE Tuner tool */
             Cy_CapSense_RunTuner(&cy_capsense_context);
 
+            /* Start the next scan */
             Cy_CapSense_ScanAllWidgets(&cy_capsense_context);
 
         }
@@ -159,7 +161,7 @@ int main(void)
  * Function Name: initialize_capsense
  ********************************************************************************
  * Summary:
- *  This function initializes the CapSense and configures the CapSense
+ *  This function initializes the CAPSENSE and configures the CAPSENSE
  *  interrupt.
  *
  *******************************************************************************/
@@ -167,7 +169,7 @@ static void initialize_capsense(void)
 {
     cy_capsense_status_t status = CY_CAPSENSE_STATUS_SUCCESS;
 
-    /* CapSense interrupt configuration */
+    /* CAPSENSE interrupt configuration */
     static const cy_stc_sysint_t capsense_interrupt_config =
     {
         .intrSrc = CYBSP_CSD_IRQ,
@@ -179,13 +181,12 @@ static void initialize_capsense(void)
 
     if (CY_CAPSENSE_STATUS_SUCCESS == status)
     {
-
-        /* Initialize CapSense interrupt */
+        /* Initialize CAPSENSE interrupt */
         Cy_SysInt_Init(&capsense_interrupt_config, capsense_isr);
         NVIC_ClearPendingIRQ(capsense_interrupt_config.intrSrc);
         NVIC_EnableIRQ(capsense_interrupt_config.intrSrc);
 
-        /* Initialize the CapSense firmware modules. */
+        /* Initialize the CAPSENSE firmware modules. */
         status = Cy_CapSense_Enable(&cy_capsense_context);
     }
 
@@ -193,7 +194,7 @@ static void initialize_capsense(void)
     {
         /* This status could fail before tuning the sensors correctly.
          * Ensure that this function passes after the CapSense sensors are tuned
-         * as per procedure give in the Readme.md file */
+         * as per procedure given in the README.md file */
     }
 }
 
@@ -202,7 +203,7 @@ static void initialize_capsense(void)
  * Function Name: capsense_isr
  ********************************************************************************
  * Summary:
- *  Wrapper function for handling interrupts from CapSense block.
+ *  Wrapper function for handling interrupts from CAPSENSE block.
  *
  *******************************************************************************/
 static void capsense_isr(void)
@@ -229,7 +230,7 @@ static void initialize_capsense_tuner(void)
  * Function Name: rtt_tuner_send
  ********************************************************************************
  * Summary:
- *  This function sends the CapSense data to Tuner through RTT
+ *  This function sends the CAPSENSE data to Tuner through RTT
  *
  *******************************************************************************/
 static void rtt_tuner_send(void * context)
